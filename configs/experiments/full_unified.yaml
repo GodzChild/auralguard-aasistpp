@@ -1,0 +1,26 @@
+# Main thesis configuration: the defensible AuralGuard-AASIST++ system.
+# Use this as the final model after the baseline runs work.
+name: full_unified_aasistpp
+backbone: aasist
+optional_speech_model_branch: none  # Keep Whisper/WavLM out of the main claim; use only as ablation.
+tasks:
+  binary_detection: true
+  codec_aware_attack_type: true
+  sliding_window_partial_localization: true
+  explanation_category: true
+loss_weights:
+  binary: 1.0
+  attack: 0.5
+  explanation: 0.2
+localization:
+  method: sliding_window
+  window_sec: 2.0
+  hop_sec: 1.0
+  suspicious_threshold: 0.75
+novelty_boundary:
+  claim: unified_aasist_based_forensic_framework
+  not_claimed_as_new:
+    - using_aasist_for_binary_detection
+    - codec_fake_detection_alone
+    - partial_fake_localization_alone
+    - generic_multitask_explainability

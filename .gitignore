@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env/
+
+# Large datasets and audio
+data/
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# Training results and checkpoints
+results/
+*.pt
+*.pth
+*.ckpt
+
+# External repos
+external/aasist/
+
+# Archives
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Logs/cache
+logs/
+cache/
+.cache/
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

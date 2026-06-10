@@ -1,0 +1,16 @@
+sample_rate: 16000
+duration_sec: 4.0
+feature_dim: 160
+num_attack_types: 4
+num_explanation_types: 4
+loss_weights:
+  binary: 1.0
+  attack: 0.5
+  explanation: 0.2
+thresholds:
+  real: 0.35
+  fake: 0.65
+  suspicious_window: 0.75
+localization:
+  window_sec: 2.0
+  hop_sec: 1.0

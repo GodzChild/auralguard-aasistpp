@@ -1,0 +1,14 @@
+# Ablation: AASIST + attack-type head.
+# Purpose: test whether codec-aware attack labels help beyond binary detection.
+name: attack_head_ablation
+backbone: aasist
+tasks:
+  binary_detection: true
+  codec_aware_attack_type: true
+  sliding_window_partial_localization: false
+  explanation_category: false
+attack_classes:
+  - bonafide
+  - tts_vc
+  - codec
+  - partial

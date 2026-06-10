@@ -1,0 +1,14 @@
+# Optional future ablation only.
+# Do NOT make this the main contribution because AASIST + speech-model fusion
+# is close to existing work. Use it only to answer: does an extra pretrained
+# speech representation improve the unified AASIST++ system?
+name: optional_whisper_or_wavlm_ablation
+status: design_placeholder_not_implemented_in_starter
+main_system_uses_this: false
+allowed_backbones:
+  - whisper_encoder
+  - wavlm_encoder
+  - hubert_encoder
+fusion_options:
+  - late_fusion_logits
+  - feature_concat_then_linear

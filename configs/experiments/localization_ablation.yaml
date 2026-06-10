@@ -1,0 +1,18 @@
+# Ablation: binary model plus sliding-window localization.
+# Purpose: compare full-audio score only vs suspicious timestamp output.
+name: localization_ablation
+backbone: aasist
+tasks:
+  binary_detection: true
+  codec_aware_attack_type: false
+  sliding_window_partial_localization: true
+  explanation_category: false
+localization:
+  method: sliding_window
+  window_sec: 2.0
+  hop_sec: 1.0
+  suspicious_threshold: 0.75
+metrics:
+  - best_iou
+  - hit_rate_at_min_iou
+  - center_error_sec

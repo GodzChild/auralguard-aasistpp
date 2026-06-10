@@ -1,0 +1,10 @@
+# Baseline 1: original AASIST-style binary detection.
+# Purpose: prove the AASIST backbone is working before adding forensic heads.
+name: baseline_aasist_binary
+backbone: aasist
+tasks:
+  binary_detection: true
+  codec_aware_attack_type: false
+  sliding_window_partial_localization: false
+  explanation_category: false
+compare_against: full_unified_aasistpp
