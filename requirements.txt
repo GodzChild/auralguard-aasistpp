@@ -1,10 +1,32 @@
-torch>=2.0
-torchaudio>=2.0
-numpy
-pandas
-scikit-learn
-soundfile
-tqdm
-PyYAML
-gradio
-scipy
+# AuralGuard-AASIST++ Python requirements
+#
+# Recommended environment:
+#   Python 3.9
+#   conda activate auralguard2
+#
+# Note:
+# For CUDA GPU support, install PyTorch and torchaudio using the command that matches
+# your CUDA version from the official PyTorch installation page.
+# The versions below are general minimum versions.
+
+torch>=2.0.0
+torchaudio>=2.0.0
+
+numpy>=1.23.0
+pandas>=1.5.0
+scikit-learn>=1.2.0
+scipy>=1.9.0
+
+librosa>=0.10.0
+soundfile>=0.12.1
+
+tqdm>=4.64.0
+PyYAML>=6.0
+matplotlib>=3.7.0
+
+gradio>=4.0.0
+
+datasets>=2.16.0
+huggingface_hub>=0.20.0
+
+openpyxl>=3.1.0

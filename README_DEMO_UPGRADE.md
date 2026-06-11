@@ -1,49 +1,61 @@
+# Demo Upgrade
 
-# AuralGuard-AASIST++ Improved Demo Patch
+This document explains the demo upgrade from a simple model output to a more complete forensic interface.
 
-This patch adds:
+---
+
+## 1. Original Demo Idea
+
+The first demo idea was simple:
 
 ```text
-src/demo_compare.py
-src/decision_gate.py
-src/audio_quality.py
-src/explain_plus.py
+upload audio -> model predicts real or fake
 ```
 
-It does not delete your old `src/demo.py`.
+This is useful for testing, but it does not explain enough for a realistic forensic scenario.
 
-## Run with baseline and final model
+A user may ask why the model said fake, whether the model was confident, which part of the audio was suspicious, whether the audio quality is good enough, and whether a human should review the result.
 
-From the project root:
+---
+
+## 2. What Was Added
+
+The upgraded demo adds final decision, fake probability, attack-type clue, suspicious timestamp evidence, beginner-friendly explanation, technical evidence summary, audio-quality diagnostics, and human-review recommendation.
+
+---
+
+## 3. Why This Is Important
+
+A fake/real label alone can be misleading.
+
+If the model is uncertain, forcing it to say fake or real may create a false sense of certainty.
+
+The upgraded demo uses safer output logic:
+
+```text
+likely real
+human review
+likely fake
+```
+
+---
+
+## 4. Relationship to the Project Goal
+
+The demo upgrade directly supports the main research goal: build a detector that is useful for real-world review, not just benchmark classification.
+
+The interface shows both the prediction and the evidence behind the prediction.
+
+---
+
+## 5. Example Command
 
 ```cmd
-python -m src.demo_compare --baseline-checkpoint "results\asvspoof_full_clean_gpu\best.pt" --final-checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --baseline-name "ASVspoof-only baseline" --final-name "Final balanced AuralGuard" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --share
+python -m src.demo_professional --checkpoint "results\final_accent_globe_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --share
 ```
 
-If your ASVspoof baseline is in another folder, use:
+---
 
-```text
-results\asvspoof_full_clean\best.pt
-```
+## 6. Summary
 
-or whichever `best.pt` exists.
-
-## What it shows
-
-- Baseline vs final model result
-- Fake probability comparison
-- Safer decision gate: likely real / suspicious human review / likely fake
-- Beginner-friendly explanation
-- Audio quality warnings
-- Suspicious timestamp regions
-- Evidence packet
-- Exported JSON report: `results\demo_last_report.json`
-
-## Why this is useful for your thesis
-
-It visibly shows what makes your project different from ordinary AASIST:
-
-```text
-Ordinary AASIST: audio → fake/real
-AuralGuard-AASIST++: audio → fake/real/human-review + explanation + evidence + robustness warning
-```
+The demo upgrade turns the project from a simple classifier into a more understandable forensic decision-support system.

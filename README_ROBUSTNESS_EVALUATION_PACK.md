@@ -1,41 +1,83 @@
+# Robustness Evaluation Pack
 
-# AuralGuard-AASIST++ Robustness Evaluation Pack
+This document explains the robustness evaluation tools used in AuralGuard-AASIST++.
 
-Implements:
-1. Gender bias diagnosis using EdAcc gender labels
-2. Audio length robustness test
-3. Calibration / confidence reliability
-4. Partial fake localization test
-5. Final research tables
+---
 
-## 1. Regenerate EdAcc with gender
-```cmd
-python scripts\make_edacc_metadata_with_gender.py --max-train 3000 --max-val 500
-```
+## 1. Purpose
 
-## 2. Gender bias diagnosis
-```cmd
-python scripts\evaluate_gender_bias.py --csv "data\metadata\val_edacc_gender.csv" --checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --limit 500 --out-csv "results\robustness\gender_predictions.csv" --summary-csv "results\robustness\gender_summary.csv"
-```
+Standard accuracy is not enough to understand whether an audio deepfake detector is reliable.
 
-## 3. Audio length robustness
-```cmd
-python scripts\evaluate_length_robustness.py --csv "data\metadata\val_final_accent_wavefake_balanced.csv" --checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --durations 4 8 12 20 --limit 300 --out-csv "results\robustness\length_predictions.csv" --summary-csv "results\robustness\length_summary.csv"
-```
+A model can have high accuracy but still fail in specific real-world situations.
 
-## 4. Calibration / confidence reliability
-```cmd
-python scripts\evaluate_calibration.py --csv "data\metadata\val_final_accent_wavefake_balanced.csv" --checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --limit 1000 --out-pred-csv "results\robustness\calibration_predictions.csv" --out-calibration-csv "results\robustness\calibration_bins.csv" --out-summary-csv "results\robustness\calibration_summary.csv"
-```
+The robustness evaluation pack tests questions such as:
 
-## 5. Partial fake localization test
-```cmd
-python scripts\create_partial_fake_set.py --real-csv "data\metadata\val_final_accent_wavefake_balanced.csv" --fake-csv "data\metadata\wavefake_val.csv" --out-audio-dir "data\partial_sim" --out-csv "data\metadata\partial_sim_test.csv" --num-samples 300
+- Does the model falsely flag real accented speech?
+- Does the model behave differently for male and female speakers?
+- Does audio length affect the prediction?
+- Are the model probabilities believable?
+- Can the model approximately locate partial fake regions?
 
-python scripts\evaluate_partial_localization.py --csv "data\metadata\partial_sim_test.csv" --checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --out-csv "results\robustness\partial_predictions.csv" --summary-csv "results\robustness\partial_summary.csv"
-```
+---
 
-## 6. Build final research tables
-```cmd
-python scripts\build_final_research_tables.py --gender-summary "results\robustness\gender_summary.csv" --length-summary "results\robustness\length_summary.csv" --calibration-summary "results\robustness\calibration_summary.csv" --partial-summary "results\robustness\partial_summary.csv" --out-md "results\robustness\final_research_tables.md" --out-csv-prefix "results\robustness\final_table"
-```
+## 2. Main Evaluations
+
+### False-Alarm Evaluation
+
+Checks how often real speech is wrongly predicted as fake. This is the most important evaluation for the project.
+
+### Gender Bias Diagnosis
+
+Checks whether false-fake rates differ across gender groups when metadata is available. This is reported as a diagnostic, not as a complete fairness solution.
+
+### Audio Length Robustness
+
+Checks whether predictions change when the same type of audio is evaluated with different durations.
+
+### Calibration
+
+Checks whether the model’s confidence scores are meaningful.
+
+### Partial Fake Localization
+
+Checks whether sliding-window inference can point near manipulated regions in simulated partial-fake examples.
+
+---
+
+## 3. Main Scripts
+
+| Script | Purpose |
+|---|---|
+| `evaluate_false_alarms.py` | Tests false fake rates on real speech |
+| `evaluate_gender_bias.py` | Compares subgroup false-alarm behavior |
+| `evaluate_length_robustness.py` | Tests different input lengths |
+| `evaluate_calibration.py` | Measures probability calibration |
+| `create_partial_fake_set.py` | Creates simulated partial fake examples |
+| `evaluate_partial_localization.py` | Tests timestamp localization quality |
+| `build_final_research_tables.py` | Builds summary result tables |
+
+---
+
+## 4. Important Results
+
+| Test | Result |
+|---|---:|
+| EdAcc false fake rate improved | 71.33% to 1.67% |
+| GLOBE false fake rate improved | 89.90% to 1.01% |
+| Calibration ECE | 0.0249 |
+| Partial fake hit rate | 71.67% |
+| Mean center error | 0.477 seconds |
+
+---
+
+## 5. Why This Matters
+
+These tests make the project stronger because they show more than simple training performance.
+
+They show how the system behaves under realistic conditions and whether the model output should be trusted, reviewed, or treated carefully.
+
+---
+
+## 6. Summary
+
+The robustness evaluation pack supports the central claim of the project: AuralGuard-AASIST++ is not only a detector. It is a robustness-focused forensic decision-support pipeline.

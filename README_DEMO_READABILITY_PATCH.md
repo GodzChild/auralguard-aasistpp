@@ -1,23 +1,51 @@
-# AuralGuard Demo Readability Patch
+# Demo Readability Patch
 
-This patch only changes the readability of:
+This document explains the readability improvements made to the Gradio demo.
 
-- Evidence packet JSON
-- Suspicious timestamp regions JSON
-- Simple explanation textbox
+---
 
-It does not change the model, inference, decision logic, or the rest of the dashboard.
+## 1. Problem
 
-## Run from project root
+Some earlier demo outputs were difficult to read because of styling issues.
 
-```cmd
-cd /d "C:\Users\AYO\Desktop\JKU\Extra Semester\THESIS AND PRACTICAL\auralguard-aasistpp"
-conda activate auralguard2
-python scripts\patch_demo_readability.py
+Examples included dark text on dark backgrounds, low-contrast explanation boxes, JSON outputs that were hard to inspect, and important result text not standing out clearly.
+
+For a project presentation, this matters because the professor or reviewer must immediately understand the result.
+
+---
+
+## 2. Goal
+
+The readability patch improves the visual clarity of the demo.
+
+The goal is:
+
+```text
+important information should be easy to see and easy to explain
 ```
 
-Then run:
+---
 
-```cmd
-python -m src.demo_professional --checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --share
-```
+## 3. Improvements
+
+The patch improves text contrast, explanation box readability, evidence packet readability, suspicious timestamp readability, professional dark interface styling, white text on dark panels, and separation between result sections.
+
+---
+
+## 4. Why Readability Matters
+
+The final demo contains final decisions, fake probabilities, explanations, audio-quality warnings, evidence packets, and suspicious timestamps.
+
+If these are hard to read, the system looks less reliable even if the model works correctly.
+
+---
+
+## 5. Beginner Explanation
+
+The demo was improved so that the model output is not only technically correct, but also readable. This is important because forensic decision-support tools must communicate uncertainty and evidence clearly.
+
+---
+
+## 6. Summary
+
+The readability patch improves the professional quality of the demo interface and helps users interpret the model output more easily.

@@ -1,46 +1,49 @@
+# Showcase Demo
 
-# AuralGuard-AASIST++ Showcase Demo
+This document explains the showcase demo version.
 
-This patch adds a visually polished demo:
+---
 
-```text
-src/demo_showcase.py
-```
+## 1. Purpose
 
-It also includes helper modules if they do not already exist:
+The showcase demo was created to make the project visually presentable during development.
 
-```text
-src/decision_gate.py
-src/audio_quality.py
-src/explain_plus.py
-```
+It focused on making the interface look more polished and easier to explain to an audience.
 
-## What it shows
+---
 
-- Beautiful dashboard-style layout
-- Baseline vs final model comparison
-- Traffic-light style decisions
-- Fake probability progress bars
-- Beginner-friendly explanation
-- Suspicious timestamp region tab
-- Audio quality metrics and warnings
-- Exported JSON report at `results/demo_showcase_last_report.json`
+## 2. Difference from Other Demos
 
-## Run
+| Demo | Main purpose |
+|---|---|
+| Simple ASVspoof demo | Basic fake/real baseline |
+| Clear demo | Simple readable result |
+| Technical demo | Detailed technical output |
+| Showcase demo | Presentation-friendly visual layout |
+| Professional demo | Final polished decision-support interface |
 
-From the project root:
+The showcase demo was an intermediate step before the professional demo.
+
+---
+
+## 3. Features
+
+The showcase demo may include improved layout, clearer result blocks, stronger visual hierarchy, model score display, explanation display, and evidence sections.
+
+---
+
+## 4. When to Use It
+
+Use the showcase demo only if you want to show an earlier presentation-style interface.
+
+For final project presentation, use:
 
 ```cmd
-python -m src.demo_showcase --baseline-checkpoint "results\asvspoof_full_clean_gpu\best.pt" --final-checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --baseline-name "ASVspoof-only baseline" --final-name "Final balanced AuralGuard" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --share
+python -m src.demo_professional --checkpoint "results\final_accent_globe_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --share
 ```
 
-If the baseline path does not exist, use:
+---
 
-```text
-results\asvspoof_full_clean\best.pt
-```
+## 5. Summary
 
-## For your presentation
-
-Use the same DECTE or FRED clip that was wrongly predicted as fake before.
-The demo will show whether the final balanced model reduces the fake probability.
+The showcase demo was useful during interface development, but the professional demo is the recommended final version.

@@ -1,90 +1,106 @@
+# GLOBE Subset Patch
 
-# GLOBE Small Subset Patch for AuralGuard-AASIST++
+This document explains the GLOBE dataset subset workflow used in AuralGuard-AASIST++.
 
-This patch adds:
+---
+
+## 1. Why GLOBE Was Added
+
+After training the balanced accent model, the system performed well on DECTE, EdAcc, and English Dialects.
+
+However, testing on GLOBE exposed a new weakness: the model falsely flagged many real global-accent clips as fake.
+
+This showed that even after adding some accent data, the model still needed broader global-accent exposure.
+
+---
+
+## 2. Problem
+
+GLOBE is a large dataset. Downloading the full dataset is unnecessary for a small project experiment and may take too much storage and time.
+
+The solution was to stream a small subset instead of downloading everything.
+
+---
+
+## 3. Goal of the Patch
+
+The GLOBE subset patch creates a small local subset:
 
 ```text
-scripts/make_globe_subset_metadata.py
+1000 training clips
+200 validation clips
+about 198 test clips
 ```
 
-It creates small real/bonafide metadata CSVs from a local GLOBE audio folder.
+This allows the model to learn from real global-accent English speech without downloading the full dataset.
 
-## 1. Create GLOBE metadata
+---
 
-From your project root:
+## 4. Main Script
+
+```text
+scripts/make_globe_streaming_subset.py
+```
+
+Example command:
 
 ```cmd
-python scripts\make_globe_subset_metadata.py --audio-root "PASTE_PATH_TO_GLOBE_AUDIO_FOLDER" --max-train 2000 --max-val 300 --max-test 300
+python scripts\make_globe_streaming_subset.py --max-train 1000 --max-val 200 --max-test 200
 ```
 
-This creates:
+Expected outputs:
 
 ```text
-data\metadata\train_globe.csv
-data\metadata\val_globe.csv
+data\metadata\globe_train.csv
+data\metadata\globe_val.csv
 data\metadata\globe_test.csv
 ```
 
-GLOBE is labelled as real/bonafide:
+---
+
+## 5. Important Metadata Check
+
+After creating the CSV files, confirm that the GLOBE test set contains only GLOBE real speech and not accidentally mixed fake files.
+
+```cmd
+python -c "import pandas as pd; df=pd.read_csv('data\\metadata\\globe_test.csv'); print('WaveFake paths:', df.file_path.str.contains('wavefake|generated_audio', case=False).sum()); print('ASVspoof paths:', df.file_path.str.contains('asvspoof', case=False).sum())"
+```
+
+Expected result:
 
 ```text
-binary_label = 0
-attack_type = bonafide
-dataset = GLOBE
+WaveFake paths: 0
+ASVspoof paths: 0
 ```
 
-## 2. Check the metadata
+---
 
-```cmd
-python scripts\check_metadata.py --csv "data\metadata\train_globe.csv"
-python scripts\check_metadata.py --csv "data\metadata\val_globe.csv"
-python scripts\check_metadata.py --csv "data\metadata\globe_test.csv"
-```
+## 6. Result
 
-## 3. Merge GLOBE with the final full CSVs
+Before GLOBE adaptation:
 
-Use the original final CSVs, not the already-balanced CSVs, then balance again.
+| Threshold | False fake rate |
+|---|---:|
+| 0.65 | 89.90% |
+| 0.85 | 82.32% |
 
-```cmd
-python scripts\merge_metadata.py --inputs "data\metadata\train_final_accent_wavefake.csv" "data\metadata\train_globe.csv" --out "data\metadata\train_final_accent_globe_wavefake.csv"
-```
+After GLOBE adaptation:
 
-```cmd
-python scripts\merge_metadata.py --inputs "data\metadata\val_final_accent_wavefake.csv" "data\metadata\val_globe.csv" --out "data\metadata\val_final_accent_globe_wavefake.csv"
-```
+| Threshold | False fake rate |
+|---|---:|
+| 0.65 | 1.01% |
+| 0.85 | 0.00% |
 
-## 4. Balance again
+This was one of the strongest results in the project.
 
-```cmd
-python scripts\balance_metadata.py --input "data\metadata\train_final_accent_globe_wavefake.csv" --out "data\metadata\train_final_accent_globe_wavefake_balanced.csv" --fake-multiplier 1.0 --cap-wavefake 15000
-```
+---
 
-```cmd
-python scripts\balance_metadata.py --input "data\metadata\val_final_accent_globe_wavefake.csv" --out "data\metadata\val_final_accent_globe_wavefake_balanced.csv" --fake-multiplier 1.0 --cap-wavefake 3000
-```
+## 7. Beginner Explanation
 
-## 5. Debug train first
+The model was still too suspicious of some global English accents. By adding a small amount of correctly labelled GLOBE real speech, the model learned that these accents are real, not fake.
 
-```cmd
-python -m src.train --train-csv "data\metadata\train_final_accent_globe_wavefake_balanced.csv" --val-csv "data\metadata\val_final_accent_globe_wavefake_balanced.csv" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --epochs 2 --batch-size 4 --out-dir "results\debug_final_accent_globe_wavefake_balanced"
-```
+---
 
-## 6. Full train
+## 8. Summary
 
-```cmd
-python -m src.train --train-csv "data\metadata\train_final_accent_globe_wavefake_balanced.csv" --val-csv "data\metadata\val_final_accent_globe_wavefake_balanced.csv" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --epochs 10 --batch-size 4 --out-dir "results\final_accent_globe_wavefake_balanced_full"
-```
-
-## 7. Evaluate GLOBE false alarms
-
-Before training with GLOBE, test the old final model:
-
-```cmd
-python scripts\evaluate_false_alarms.py --csv "data\metadata\globe_test.csv" --checkpoint "results\final_accent_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --limit 300 --out-csv "results\final_accent_wavefake_balanced_full\globe_false_alarms_before.csv"
-```
-
-After training with GLOBE, test the new model:
-
-```cmd
-python scripts\evaluate_false_alarms.py --csv "data\metadata\globe_test.csv" --checkpoint "results\final_accent_globe_wavefake_balanced_full\best.pt" --aasist-root "external\aasist" --aasist-config "external\aasist\config\AASIST.conf" --limit 300 --out-csv "results\final_accent_globe_wavefake_balanced_full\globe_false_alarms_after.csv"
-```
+The GLOBE subset patch improved global-accent robustness without requiring the full dataset download.
