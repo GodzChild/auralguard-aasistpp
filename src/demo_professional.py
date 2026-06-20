@@ -1,5 +1,23 @@
 from __future__ import annotations
 
+FORCE_READABILITY_STYLE_TAG = """
+<style>
+.gradio-container, .gradio-container * {
+  color: #f8fafc !important;
+}
+.gradio-container input,
+.gradio-container textarea,
+.gradio-container .prose,
+.gradio-container .markdown,
+.gradio-container pre,
+.gradio-container code {
+  color: #f8fafc !important;
+  background-color: #0f172a !important;
+}
+</style>
+"""
+
+
 import argparse
 import html
 import json
@@ -10,6 +28,11 @@ import gradio as gr
 import torch
 
 from .infer import load_model, run_auralguard
+
+SPECIFIC_READABILITY_FIX_CSS = '\n/* FINAL SPECIFIC READABILITY FIX */\n\n/* Make specific problem areas black/dark with white text */\n#evidence_packet_box,\n#evidence_packet_box *,\n#suspicious_segments_box,\n#suspicious_segments_box *,\n#beginner_explanation_box,\n#beginner_explanation_box *,\n#export_path_box,\n#export_path_box *,\n#voice_pattern_box,\n#voice_pattern_box * {\n  background: #050b14 !important;\n  background-color: #050b14 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n\n/* Gradio JSON / code internal elements */\n#evidence_packet_box pre,\n#evidence_packet_box code,\n#evidence_packet_box span,\n#evidence_packet_box div,\n#evidence_packet_box textarea,\n#evidence_packet_box input,\n#suspicious_segments_box pre,\n#suspicious_segments_box code,\n#suspicious_segments_box span,\n#suspicious_segments_box div,\n#suspicious_segments_box textarea,\n#suspicious_segments_box input {\n  background: #050b14 !important;\n  background-color: #050b14 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  caret-color: #ffffff !important;\n  border-color: #60a5fa !important;\n}\n\n/* CodeMirror / JSON viewer internals used by Gradio */\n#evidence_packet_box .cm-editor,\n#evidence_packet_box .cm-scroller,\n#evidence_packet_box .cm-content,\n#evidence_packet_box .cm-line,\n#evidence_packet_box .cm-gutters,\n#evidence_packet_box .json-holder,\n#evidence_packet_box .json-holder *,\n#suspicious_segments_box .cm-editor,\n#suspicious_segments_box .cm-scroller,\n#suspicious_segments_box .cm-content,\n#suspicious_segments_box .cm-line,\n#suspicious_segments_box .cm-gutters,\n#suspicious_segments_box .json-holder,\n#suspicious_segments_box .json-holder * {\n  background: #050b14 !important;\n  background-color: #050b14 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n}\n\n/* Force labels readable */\n#evidence_packet_box .block-label,\n#suspicious_segments_box .block-label,\n#beginner_explanation_box .block-label,\n#export_path_box .block-label {\n  background: #1e3a8a !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n}\n\n/* Voice-pattern/prosody interpretation */\n.voice-pattern-interpretation,\n.voice-pattern-interpretation *,\n.prosody-interpretation,\n.prosody-interpretation * {\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n\n/* General fallback for textboxes */\n.gradio-container textarea,\n.gradio-container input,\n.gradio-container textarea:disabled,\n.gradio-container input:disabled {\n  background: #050b14 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n'
+
+
+FORCE_DARK_READABLE_CSS = '\n/* FORCE DARK READABLE AURALGUARD DEMO */\n\n:root {\n  --ag-page: #061426;\n  --ag-panel: #071629;\n  --ag-border: #60a5fa;\n  --ag-text: #ffffff;\n}\n\n/* Entire app */\n.gradio-container,\n.gradio-container * {\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n}\n\n/* Main background */\n.gradio-container {\n  background: #061426 !important;\n}\n\n/* All component shells */\n.gradio-container .block,\n.gradio-container .form,\n.gradio-container .wrap,\n.gradio-container .panel,\n.gradio-container .container,\n.gradio-container .input-container,\n.gradio-container .output-class,\n.gradio-container .tabs,\n.gradio-container .tabitem {\n  background: #071629 !important;\n  color: #ffffff !important;\n  border-color: #334155 !important;\n}\n\n/* Textboxes and inputs */\n.gradio-container textarea,\n.gradio-container input,\n.gradio-container textarea:disabled,\n.gradio-container input:disabled,\n.gradio-container [data-testid="textbox"] textarea,\n.gradio-container [data-testid="textbox"] input {\n  background-color: #071629 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n  caret-color: #ffffff !important;\n  border: 1px solid #60a5fa !important;\n  box-shadow: none !important;\n}\n\n/* White inner areas around textboxes */\n.gradio-container [data-testid="textbox"],\n.gradio-container [data-testid="textbox"] > div,\n.gradio-container [data-testid="textbox"] label,\n.gradio-container [data-testid="textbox"] .wrap,\n.gradio-container [data-testid="textbox"] .container,\n.gradio-container [data-testid="textbox"] .input-container {\n  background: #071629 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n}\n\n/* JSON/code/evidence packet blocks */\n.gradio-container pre,\n.gradio-container code,\n.gradio-container pre *,\n.gradio-container code *,\n.gradio-container .json-holder,\n.gradio-container .json-holder *,\n.gradio-container .cm-editor,\n.gradio-container .cm-editor *,\n.gradio-container .cm-scroller,\n.gradio-container .cm-content,\n.gradio-container .cm-line {\n  background: #071629 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n\n/* Labels */\n.gradio-container .block-label,\n.gradio-container .block-title,\n.gradio-container .label-wrap,\n.gradio-container .label-wrap *,\n.gradio-container label,\n.gradio-container label * {\n  background: #1e3a8a !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n  border-radius: 8px !important;\n}\n\n/* Tabs */\n.gradio-container .tab-nav button,\n.gradio-container button[role="tab"] {\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  background: #0b1f3a !important;\n}\n\n.gradio-container .tab-nav button.selected,\n.gradio-container button[role="tab"][aria-selected="true"] {\n  color: #061426 !important;\n  -webkit-text-fill-color: #061426 !important;\n  background: #ffffff !important;\n}\n\n/* Markdown and HTML */\n.gradio-container .prose,\n.gradio-container .prose *,\n.gradio-container .markdown,\n.gradio-container .markdown *,\n.gradio-container .html-container,\n.gradio-container .html-container *,\n.gradio-container .gr-html,\n.gradio-container .gr-html * {\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n\n/* Placeholder text */\n.gradio-container textarea::placeholder,\n.gradio-container input::placeholder {\n  color: #dbeafe !important;\n  -webkit-text-fill-color: #dbeafe !important;\n  opacity: 1 !important;\n}\n\n/* Selection */\n.gradio-container ::selection {\n  background: #2563eb !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n}\n\n/* Warning / info panels */\n.gradio-container .warning,\n.gradio-container .warning *,\n.gradio-container .error,\n.gradio-container .error *,\n.gradio-container .info,\n.gradio-container .info * {\n  background: #071629 !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n\n/* Prosody custom sections */\n.prosody-card,\n.prosody-card *,\n.prosody-panel,\n.prosody-panel *,\n.voice-pattern,\n.voice-pattern *,\n.evidence-card,\n.evidence-card *,\n.summary-card,\n.summary-card * {\n  background-color: transparent !important;\n  color: #ffffff !important;\n  -webkit-text-fill-color: #ffffff !important;\n  opacity: 1 !important;\n}\n'
 
 try:
     from .audio_quality import audio_quality_report
@@ -281,9 +304,12 @@ def prosody_html(prosody: dict) -> str:
     if not metric_items:
         metric_items = "<div class='empty-message'>No prosody metrics available.</div>"
 
-    interpretation_html = "".join(f"<li>{html.escape(str(x))}</li>" for x in interpretation)
+    interpretation_html = "".join(
+        f"<li style='color:#ffffff !important; -webkit-text-fill-color:#ffffff !important; opacity:1 !important; margin-bottom:8px;'>{html.escape(str(x))}</li>"
+        for x in interpretation
+    )
     if not interpretation_html:
-        interpretation_html = "<li>No interpretation available.</li>"
+        interpretation_html = "<li style='color:#ffffff !important; -webkit-text-fill-color:#ffffff !important; opacity:1 !important;'>No interpretation available.</li>"
 
     warning_html = ""
     if warnings:
@@ -296,14 +322,71 @@ def prosody_html(prosody: dict) -> str:
         <h3>Prosody / Tonality Diagnostics</h3>
         <div class="ok-box"><b>Summary:</b> {summary}</div>
         <div class="quality-grid" style="margin-top:14px;">{metric_items}</div>
-        <div class="evidence-panel" style="margin-top:14px;">
-            <h3>Voice-Pattern Interpretation</h3>
-            <ul>{interpretation_html}</ul>
+        <div class="evidence-panel voice-pattern-interpretation" style="margin-top:14px; background:#0b1f3a; color:#ffffff !important; -webkit-text-fill-color:#ffffff !important;">
+            <h3 style="color:#ffffff !important; -webkit-text-fill-color:#ffffff !important;">Voice-Pattern Interpretation</h3>
+            <ul style="color:#ffffff !important; -webkit-text-fill-color:#ffffff !important;">{interpretation_html}</ul>
         </div>
         {warning_html}
         <div class="empty-message" style="margin-top:14px;">
             These diagnostics support the explanation only. They do not replace the AASIST fake probability and should not be treated as proof.
         </div>
+    </div>
+    """
+
+
+
+def black_output_box(title: str, text: str) -> str:
+    safe_title = html.escape(str(title))
+    safe_text = html.escape("" if text is None else str(text))
+    return f"""
+    <div style="
+        background:#000000;
+        color:#ffffff;
+        border:1px solid rgba(255,255,255,0.35);
+        border-radius:14px;
+        padding:18px 20px;
+        min-height:120px;
+        font-family:Inter, Arial, sans-serif;
+        font-size:15px;
+        line-height:1.55;
+        white-space:pre-wrap;
+        overflow:auto;
+    ">
+        <div style="font-weight:900; font-size:16px; margin-bottom:12px; color:#ffffff;">{safe_title}</div>
+        <div style="color:#ffffff;">{safe_text}</div>
+    </div>
+    """
+
+
+def black_json_box(title: str, obj) -> str:
+    try:
+        text = json.dumps(obj, indent=2, ensure_ascii=False)
+    except Exception:
+        text = str(obj)
+    safe_title = html.escape(str(title))
+    safe_text = html.escape(text)
+    return f"""
+    <div style="
+        background:#000000;
+        color:#ffffff;
+        border:1px solid rgba(255,255,255,0.35);
+        border-radius:14px;
+        padding:18px 20px;
+        min-height:220px;
+        font-family:Consolas, 'Courier New', monospace;
+        font-size:14px;
+        line-height:1.45;
+        white-space:pre;
+        overflow:auto;
+    ">
+        <div style="font-family:Inter, Arial, sans-serif; font-weight:900; font-size:16px; margin-bottom:12px; color:#ffffff;">{safe_title}</div>
+        <pre style="
+            margin:0;
+            background:#000000;
+            color:#ffffff;
+            white-space:pre-wrap;
+            font-family:Consolas, 'Courier New', monospace;
+        ">{safe_text}</pre>
     </div>
     """
 
@@ -318,7 +401,7 @@ def main():
     def analyze(audio_path):
         if audio_path is None:
             empty = "<div class='empty-message'>Upload an audio file to begin analysis.</div>"
-            return (empty, empty, "Upload an audio file to generate a simple explanation.", [], {}, empty, empty, "")
+            return (empty, empty, "Upload an audio file to generate a simple explanation.", "[]", "{}", empty, empty, "")
 
         quality = compute_quality(audio_path, args.sample_rate)
         prosody = compute_prosody(audio_path, args.sample_rate)
@@ -346,15 +429,26 @@ def main():
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(export, indent=2), encoding="utf-8")
 
+        suspicious_segments_json = json.dumps(
+            json.dumps(report.get("suspicious_segments", []), indent=2),
+            indent=2,
+            ensure_ascii=False,
+        )
+        evidence_packet_json = json.dumps(
+            json.dumps(report.get("evidence", {}), indent=2),
+            indent=2,
+            ensure_ascii=False,
+        )
+
         return (
             main_decision_html(report),
             evidence_summary_html(report),
-            report.get("beginner_explanation", ""),
-            report.get("suspicious_segments", []),
-            report.get("evidence", {}),
+            black_output_box("Simple explanation", report.get("beginner_explanation", "")),
+            black_json_box("Suspicious timestamp regions", report.get("suspicious_segments", [])),
+            black_json_box("Evidence packet", report.get("evidence", {})),
             quality_html(quality),
             prosody_html(prosody),
-            str(report_path),
+            black_output_box("Saved JSON report path", str(report_path)),
         )
 
     css = """
@@ -384,27 +478,313 @@ def main():
     .warning-box { border:1px solid rgba(255,209,102,.55); background:rgba(255,209,102,.12); border-radius:14px; padding:13px; color:var(--white); margin-top:14px; }
     .ok-box { border:1px solid rgba(57,217,138,.45); background:rgba(57,217,138,.12); border-radius:14px; padding:13px; color:var(--white); }
     .empty-message { border:1px dashed rgba(230,238,252,.42); border-radius:18px; padding:18px; color:var(--white); background:rgba(255,255,255,.045); }
-    textarea, input, .gradio-dropdown, .gradio-textbox { background:rgba(255,255,255,.06)!important; color:var(--white)!important; -webkit-text-fill-color:#ffffff!important; border-color:rgba(131,183,255,.28)!important; }
     .prose, .markdown, label, .wrap, .json-holder, .tab-nav, .tabitem, .gradio-container h1, .gradio-container h2, .gradio-container h3, .gradio-container p, .gradio-container span, .gradio-container label { color:var(--white)!important; }
+
+    /* Final readability fix: black code boxes with white text */
+    #evidence-json-box,
+    #suspicious-json-box,
+    #simple-explanation-box,
+    #export-path-box {
+        background: #000000 !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255,255,255,.35) !important;
+        border-radius: 12px !important;
+    }
+
+    #evidence-json-box *,
+    #suspicious-json-box *,
+    #simple-explanation-box *,
+    #export-path-box * {
+        background: #000000 !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
+    #evidence-json-box textarea,
+    #suspicious-json-box textarea,
+    #simple-explanation-box textarea,
+    #export-path-box textarea,
+    #evidence-json-box pre,
+    #suspicious-json-box pre,
+    #evidence-json-box code,
+    #suspicious-json-box code,
+    #evidence-json-box .cm-editor,
+    #suspicious-json-box .cm-editor,
+    #evidence-json-box .cm-content,
+    #suspicious-json-box .cm-content,
+    #evidence-json-box .cm-line,
+    #suspicious-json-box .cm-line {
+        background: #000000 !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        font-size: 15px !important;
+        line-height: 1.5 !important;
+        opacity: 1 !important;
+    }
+
+    .voice-pattern-interpretation,
+    .voice-pattern-interpretation *,
+    .warning-box,
+    .warning-box *,
+    .ok-box,
+    .ok-box * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
     button.primary { background:linear-gradient(90deg,var(--blue),var(--cyan))!important; color:#03101f!important; border:none!important; font-weight:950!important; border-radius:14px!important; box-shadow:0 12px 35px rgba(40,224,232,.26)!important; }
     @media (max-width:900px) { .metric-grid, .quality-grid { grid-template-columns:1fr; } .decision-text { font-size:38px; } }
-    """
+    
+
+/* FINAL TEXTBOX READABILITY FIX
+   Uses Textbox instead of Gradio JSON/Code viewers because those can keep white panels
+   or hidden syntax-highlighting colors in some browsers. */
+#simple-explanation-box,
+#suspicious-json-box,
+#evidence-json-box,
+#export-path-box {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.35) !important;
+    border-radius: 12px !important;
+}
+
+#simple-explanation-box *,
+#suspicious-json-box *,
+#evidence-json-box *,
+#export-path-box * {
+    background: #000000 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+#simple-explanation-box textarea,
+#suspicious-json-box textarea,
+#evidence-json-box textarea,
+#export-path-box textarea {
+    background: #000000 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    font-family: Consolas, "Courier New", monospace !important;
+}
+
+#simple-explanation-box label,
+#suspicious-json-box label,
+#evidence-json-box label,
+#export-path-box label {
+    background: #111827 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-weight: 800 !important;
+}
+
+/* Prosody interpretation and warning text */
+.evidence-panel ul,
+.evidence-panel li,
+.warning-box,
+.warning-box *,
+.ok-box,
+.ok-box * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+
+
+/* PROFESSIONAL SITE HEADER REDESIGN
+   Removes the bubble/chip look and replaces it with a structured product-style header. */
+
+.hero-header {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(8, 20, 38, 0.98));
+    border-radius: 18px;
+    padding: 30px 34px 24px 34px;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+    margin-bottom: 22px;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 26px;
+    align-items: center;
+}
+
+.hero-copy {
+    max-width: 820px;
+}
+
+.eyebrow {
+    color: #38e8f2 !important;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+.main-title {
+    font-size: 46px;
+    line-height: 1.04;
+    margin: 0;
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    color: #ffffff !important;
+}
+
+.subtitle {
+    font-size: 17px;
+    line-height: 1.55;
+    color: #dbeafe !important;
+    margin-top: 14px;
+    max-width: 800px;
+}
+
+.hero-status-card {
+    background: rgba(15, 23, 42, 0.78);
+    border: 1px solid rgba(96, 165, 250, 0.28);
+    border-radius: 16px;
+    padding: 18px 18px;
+    text-align: left;
+}
+
+.status-label {
+    color: #93c5fd !important;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 850;
+}
+
+.status-value {
+    color: #ffffff !important;
+    font-size: 22px;
+    font-weight: 900;
+    margin-top: 6px;
+}
+
+.status-note {
+    color: #cbd5e1 !important;
+    font-size: 13px;
+    line-height: 1.45;
+    margin-top: 8px;
+}
+
+.workflow-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 26px;
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+    padding-top: 18px;
+}
+
+.workflow-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-right: 18px;
+}
+
+.step-number {
+    color: #38e8f2 !important;
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: 0.10em;
+}
+
+.step-title {
+    color: #f8fafc !important;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* Remove old bubble-chip style if any remains */
+.feature-row,
+.feature-chip {
+    display: none !important;
+}
+
+/* Make tabs cleaner and less button-like */
+.gradio-container button[role="tab"],
+.gradio-container .tab-nav button {
+    background: transparent !important;
+    border: none !important;
+    color: #cbd5e1 !important;
+    -webkit-text-fill-color: #cbd5e1 !important;
+    padding: 12px 14px !important;
+    font-weight: 650 !important;
+    border-radius: 0 !important;
+}
+
+.gradio-container button[role="tab"][aria-selected="true"],
+.gradio-container .tab-nav button.selected {
+    background: rgba(255, 255, 255, 0.96) !important;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+@media (max-width: 900px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .workflow-strip {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .main-title {
+        font-size: 36px;
+    }
+}
+
+"""
 
     with gr.Blocks(css=css, title="AuralGuard-AASIST++ Professional Dashboard", theme=gr.themes.Soft()) as demo:
         gr.HTML("""
-            <div class="main-header">
-                <div class="eyebrow">Forensic Audio Analysis</div>
-                <h1 class="main-title">AuralGuard-AASIST++</h1>
-                <div class="subtitle">Robust and explainable audio deepfake detection for synthetic speech, accented English, interview-style recordings, and prosody/tonality review.</div>
-                <div class="feature-row">
-                    <span class="feature-chip">Final Decision</span>
-                    <span class="feature-chip">Evidence Summary</span>
-                    <span class="feature-chip">Prosody / Tonality Diagnostics</span>
-                    <span class="feature-chip">Audio Quality Diagnostics</span>
-                    <span class="feature-chip">Suspicious Timestamp Evidence</span>
-                    <span class="feature-chip">Exportable Report</span>
+            <section class="hero-header">
+                <div class="hero-grid">
+                    <div class="hero-copy">
+                        <div class="eyebrow">Forensic Audio Analysis</div>
+                        <h1 class="main-title">AuralGuard-AASIST++</h1>
+                        <p class="subtitle">
+                            Robust audio deepfake detection with accent-aware false-alarm reduction,
+                            human-review support, and readable forensic evidence.
+                        </p>
+                    </div>
+                    <div class="hero-status-card">
+                        <div class="status-label">System Mode</div>
+                        <div class="status-value">Decision Support</div>
+                        <div class="status-note">Not legal proof • Review uncertain cases</div>
+                    </div>
                 </div>
-            </div>
+
+                <div class="workflow-strip">
+                    <div class="workflow-step">
+                        <span class="step-number">01</span>
+                        <span class="step-title">Upload audio</span>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-number">02</span>
+                        <span class="step-title">Analyze acoustic evidence</span>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-number">03</span>
+                        <span class="step-title">Review decision and report</span>
+                    </div>
+                </div>
+            </section>
         """)
 
         with gr.Row():
@@ -419,17 +799,17 @@ def main():
         with gr.Tab("Evidence Summary"):
             evidence_summary = gr.HTML()
         with gr.Tab("Beginner Explanation"):
-            beginner_explanation = gr.Textbox(label="Simple explanation", lines=8)
+            beginner_explanation = gr.HTML()
         with gr.Tab("Prosody / Tonality Diagnostics"):
             prosody_report = gr.HTML()
         with gr.Tab("Suspicious Timestamp Evidence"):
-            suspicious_segments = gr.JSON(label="Suspicious timestamp regions")
+            suspicious_segments = gr.HTML()
         with gr.Tab("Evidence Packet"):
-            evidence_packet = gr.JSON(label="Evidence packet")
+            evidence_packet = gr.HTML()
         with gr.Tab("Audio Quality Diagnostics"):
             quality_report = gr.HTML()
         with gr.Tab("Export"):
-            export_path = gr.Textbox(label="Saved JSON report path")
+            export_path = gr.HTML()
 
         analyze_btn.click(
             fn=analyze,
