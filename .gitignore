@@ -5,7 +5,15 @@ __pycache__/
 *.pyd
 .venv/
 venv/
-.env/
+env/
+
+# Local environment / secrets
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+!.env.example
 
 # Large datasets and audio
 data/
