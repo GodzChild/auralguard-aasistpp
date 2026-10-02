@@ -21,7 +21,7 @@ AASIST_COMMIT = os.getenv(
 )
 AASIST_BASE_URL = f"https://raw.githubusercontent.com/clovaai/aasist/{AASIST_COMMIT}"
 
-MODEL_REPO = os.getenv("AURALGUARD_MODEL_REPO", "GodzChild/auralguard-aasistpp-model")
+MODEL_REPO = os.getenv("AURALGUARD_MODEL_REPO")
 CHECKPOINT_FILE = os.getenv("AURALGUARD_CHECKPOINT_FILE", "best.pt")
 MODEL_REVISION = os.getenv("AURALGUARD_MODEL_REVISION", "main")
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -48,6 +48,12 @@ def ensure_aasist() -> tuple[Path, Path]:
 
 
 def get_checkpoint() -> Path:
+    if not MODEL_REPO:
+        raise RuntimeError(
+            "AURALGUARD_MODEL_REPO is not set. Add the Hugging Face model repository "
+            "ID in the Space Settings under Variables."
+        )
+
     path = hf_hub_download(
         repo_id=MODEL_REPO,
         filename=CHECKPOINT_FILE,
