@@ -1,18 +1,15 @@
 # AuralGuard-AASIST++ Python requirements
 #
-# Recommended environment:
-#   Python 3.9
-#   conda activate auralguard2
+# The project was developed with Python 3.9. Keep PyTorch aligned with the
+# working local environment unless a deliberate migration is tested.
 #
-# Note:
-# For CUDA GPU support, install PyTorch and torchaudio using the command that matches
-# your CUDA version from the official PyTorch installation page.
-# The versions below are general minimum versions.
+# Hugging Face Spaces can run this on CPU. A CUDA build may be installed
+# separately for local/GPU use.
 
-torch>=2.0.0
-torchaudio>=2.0.0
+torch==2.5.1
+torchaudio==2.5.1
 
-numpy>=1.23.0
+numpy>=1.23.0,<2.0
 pandas>=1.5.0
 scikit-learn>=1.2.0
 scipy>=1.9.0
@@ -24,9 +21,9 @@ tqdm>=4.64.0
 PyYAML>=6.0
 matplotlib>=3.7.0
 
-gradio>=4.0.0
+gradio==4.44.1
 
 datasets>=2.16.0
-huggingface_hub>=0.20.0
+huggingface_hub>=0.25.0,<1.0
 
 openpyxl>=3.1.0

@@ -391,8 +391,7 @@ def black_json_box(title: str, obj) -> str:
     """
 
 
-def main():
-    args = parse_args()
+def create_demo(args):
     device = torch.device(args.device)
     print(f"Using device: {device}")
 
@@ -832,6 +831,12 @@ def main():
             </div>
         """)
 
+    return demo
+
+
+def main():
+    args = parse_args()
+    demo = create_demo(args)
     demo.launch(share=args.share, inbrowser=True, show_error=True)
 
 
