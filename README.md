@@ -1,15 +1,3 @@
----
-title: AuralGuard
-emoji: 🎧
-colorFrom: blue
-colorTo: cyan
-sdk: gradio
-sdk_version: 4.44.1
-python_version: "3.9"
-app_file: app.py
-pinned: false
----
-
 # AuralGuard-AASIST++
 
 AuralGuard-AASIST++ is my audio deepfake detection project built around the AASIST anti-spoofing model.
