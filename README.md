@@ -1,3 +1,15 @@
+---
+title: AuralGuard
+emoji: 🎧
+colorFrom: blue
+colorTo: cyan
+sdk: gradio
+sdk_version: 4.44.1
+python_version: "3.9"
+app_file: app.py
+pinned: false
+---
+
 # AuralGuard-AASIST++
 
 AuralGuard-AASIST++ is my audio deepfake detection project built around the AASIST anti-spoofing model.
@@ -132,6 +144,16 @@ python -m src.infer \
   --audio path/to/audio.wav \
   --checkpoint results/run1/best.pt
 ```
+
+## Hugging Face Space
+
+The repository now includes a root `app.py` for permanent Gradio deployment on Hugging Face Spaces. The hosted launcher keeps the checkpoint outside GitHub and downloads it from a separate Hugging Face model repository.
+
+The model repository can remain private while the Space is public. In that setup, store a read-capable Hugging Face token as the Space secret `HF_TOKEN` and configure the model repository ID with the Space variable `AURALGUARD_MODEL_REPO`.
+
+The Space also retrieves the required AASIST model/config files from the official upstream repository at a pinned commit instead of committing the external repository here.
+
+See `docs/HUGGINGFACE_SPACE.md` for the complete deployment steps, local hosted-style test command, CPU/GPU notes, and checkpoint licensing cautions.
 
 ## Demo
 
