@@ -1,5 +1,7 @@
 # AuralGuard-AASIST++
 
+**Live demo:** https://huggingface.co/spaces/AyoPrince/AuralGuard
+
 AuralGuard-AASIST++ is my audio deepfake detection project built around the AASIST anti-spoofing model.
 
 The main goal was not only to detect synthetic speech, but also to study a practical problem I kept seeing during testing: a detector can score well on benchmark data and still wrongly flag real accented or interview-style speech as fake.
